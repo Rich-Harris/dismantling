@@ -1,0 +1,139 @@
+<div class='presentation' on-scroll='handleScroll()'>
+	{{yield}}
+</div>
+
+
+<style>
+	.presentation {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow-y: scroll;
+	}
+
+	.centered {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+	}
+</style>
+
+
+<script>
+	component.exports = {
+		onrender () {
+			this.container = this.find( '.presentation' );
+			this.slides = this.findAllComponents( 'slide' );
+
+			let match = /#(\d+)/.exec( window.location.hash );
+			if ( match ) {
+				// TODO would be better if onrender happened after rendering was complete.
+				// order should stay the same, obvs
+				setTimeout( () => this.goto( +match[1] ) );
+			}
+
+			this.observe({
+				scrollTop: st => this.container.scrollTop = st,
+				currentSlide: ( slide, previousSlide ) => {
+					if ( slide !== undefined ) {
+						window.location.hash = slide;
+						this.goto( slide, slide < previousSlide );
+					}
+				}
+			});
+
+			window.addEventListener( 'keydown', event => {
+				var i, slide;
+
+				if ( event.which < 37 || event.which > 40 ) {
+					return;
+				}
+
+				event.preventDefault();
+
+				// get current slide
+				i = this.updateCurrentSlide();
+				slide = this.slides[i];
+
+				switch ( event.which ) {
+					case 39:
+						if ( slide.next() ) {
+							return;
+						}
+
+						this.goto( i + 1 );
+						break;
+
+					case 37:
+						if ( slide.previous() ) {
+							return;
+						}
+
+						this.goto( i - 1, true );
+						break;
+
+					case 40:
+						this.goto( i + 1 );
+						break;
+
+					case 38:
+						this.goto( i - 1, true );
+						break;
+				}
+			});
+
+			this.scrollTimeout = null;
+			this._updateCurrentSlide = () => this.updateCurrentSlide();
+		},
+
+		handleScroll () {
+			clearTimeout( this.scrollTimeout );
+			this.scrollTimeout = setTimeout( this._updateCurrentSlide, 200 );
+		},
+
+		updateCurrentSlide () {
+			var i = this.slides.length;
+			while ( i-- ) {
+				if ( this.slides[i].isCurrent() ) {
+					this.set( 'currentSlide', i );
+					return i;
+				}
+			}
+
+			throw new Error( 'An impossible situation occurred.' );
+		},
+
+		goto ( i, options = {} ) {
+			var slide, bcr, currentScrollTop, targetScrollTop;
+
+			i = Math.max( 0, Math.min( i, this.slides.length - 1 ) );
+			slide = this.slides[i];
+
+			bcr = slide.bcr();
+
+			currentScrollTop = this.container.scrollTop;
+			targetScrollTop = currentScrollTop + bcr.top;
+
+			let promise;
+
+			if ( options.smooth ) {
+				this.set( 'scrollTop', currentScrollTop );
+				promise = this.animate( 'scrollTop', targetScrollTop, {
+					easing: 'easeOut',
+					duration: 10 * Math.sqrt( Math.abs( currentScrollTop - targetScrollTop ) )
+				});
+			} else {
+				promise = this.set( 'scrollTop', targetScrollTop );
+			}
+
+			promise.then( () => {
+				if ( options.back ) {
+					slide.gotoLastStep();
+				} else {
+					slide.gotoFirstStep();
+				}
+			});
+		}
+	};
+</script>

@@ -1,0 +1,91 @@
+<div>
+	<p>
+		Today is {{ moment(date).format('MMMM Do YYYY') }}.
+		The time is <strong>{{ moment(date).format('h:mm:ss a') }}</strong>
+	</p>
+</div>
+
+<svg viewBox='0 0 100 100'>
+	<g transform='translate(50,50)'>
+		<circle stroke='#333' fill='white' r='48'/>
+
+		<!-- markers every minute (major markers every 5 minutes) -->
+		<g>
+			{{#each minor:i}}
+				<line class='minor' y1='42' y2='45' transform='rotate( {{
+					360 * i / minor.length
+				}} )'/>
+			{{/each}}
+		</g>
+
+		<g>
+			{{#each major:i}}
+				<line class='major' y1='35' y2='45' transform='rotate( {{
+					360 * i / major.length
+				}} )'/>
+			{{/each}}
+		</g>
+
+		<!-- hour hand -->
+		<line class='hour' y1='2' y2='-20' transform='rotate( {{
+			30 * date.getHours() +
+			date.getMinutes() / 2
+		}} )'/>
+
+		<!-- minute hand -->
+		<line class='minute' y1='4' y2='-30' transform='rotate( {{
+			6 * date.getMinutes() +
+			date.getSeconds() / 10
+		}} )'/>
+
+		<!-- second hand -->
+		<g transform='rotate( {{
+			6 * date.getSeconds()
+		}} )'>
+			<line class='second' y1='10' y2='-38'/>
+			<line class='second-counterweight' y1='10' y2='2'/>
+		</g>
+	</g>
+</svg>
+
+<style>
+	svg {
+		width: 100px;
+		height: 100px;
+	}
+
+	.minor {
+		stroke: #999;
+		stroke-width: 0.5;
+	}
+
+	.major {
+		stroke: #333;
+		stroke-width: 1;
+	}
+
+	.hour {
+		stroke: #333;
+	}
+
+	.minute {
+		stroke: #666;
+	}
+
+	.second, .second-counterweight {
+		stroke: rgb(180,0,0);
+	}
+
+	.second-counterweight {
+		stroke-width: 3;
+	}
+</style>
+
+<script>
+	component.exports = {
+		data: {
+			major: new Array( 12 ),
+			minor: new Array( 60 )
+		}
+	};
+</script>

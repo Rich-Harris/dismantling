@@ -1,0 +1,62 @@
+[
+  {
+    "name": "ractive",
+    "stars": 3627,
+    "contributors": 39,
+    "lastCommit": "2015-02-20T19:37:16.000Z"
+  },
+  {
+    "name": "mercury",
+    "stars": 1351,
+    "contributors": 18,
+    "lastCommit": "2015-02-21T11:02:44.000Z"
+  },
+  {
+    "name": "om",
+    "stars": 3428,
+    "contributors": 1,
+    "lastCommit": "2015-02-04T01:10:04.000Z"
+  },
+  {
+    "name": "hamlet",
+    "stars": 344,
+    "contributors": 2,
+    "lastCommit": "2014-07-04T16:18:17.000Z"
+  },
+  {
+    "name": "vue",
+    "stars": 3667,
+    "contributors": 5,
+    "lastCommit": "2015-02-05T21:26:28.000Z"
+  },
+  {
+    "name": "mithril",
+    "stars": 49,
+    "contributors": 3,
+    "lastCommit": "2015-02-05T03:02:32.000Z"
+  },
+  {
+    "name": "angular.js",
+    "stars": 35486,
+    "contributors": 100,
+    "lastCommit": "2015-02-14T05:31:56.000Z"
+  },
+  {
+    "name": "react",
+    "stars": 16598,
+    "contributors": 100,
+    "lastCommit": "2015-02-21T01:00:36.000Z"
+  },
+  {
+    "name": "ember.js",
+    "stars": 12756,
+    "contributors": 100,
+    "lastCommit": "2015-02-20T23:57:01.000Z"
+  },
+  {
+    "name": "meteor",
+    "stars": 22639,
+    "contributors": 100,
+    "lastCommit": "2015-02-19T18:42:08.000Z"
+  }
+]

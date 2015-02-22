@@ -1,0 +1,12 @@
+{
+	"esnext": true,
+	"undef": true,
+	"unused": true,
+	"globals": {
+		"component": true,
+		"require": true,
+		"setTimeout": true,
+		"clearTimeout": true,
+		"fetch": true
+	}
+}

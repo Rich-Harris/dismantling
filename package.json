@@ -1,0 +1,25 @@
+{
+  "name": "dismantling",
+  "description": "Dismantling the barriers to entry",
+  "author": "Rich Harris",
+  "license": "MIT",
+  "version": "0.1.0",
+  "repository": "https://github.com/rich-harris/dismantling",
+  "scripts": {
+    "start": "gobble"
+  },
+  "devDependencies": {
+    "gobble": "^0.7.3",
+    "gobble-babel": "^4.0.0",
+    "gobble-browserify": "^0.2.0",
+    "gobble-cli": "^0.3.5",
+    "gobble-derequire": "^0.1.0",
+    "gobble-esperanto-bundle": "^0.1.7",
+    "gobble-ractive": "git://github.com/gobblejs/gobble-ractive#edge",
+    "gobble-sass": "^0.4.0"
+  },
+  "dependencies": {
+    "moment": "^2.9.0",
+    "ractive": "git://github.com/ractivejs/ractive#build"
+  }
+}

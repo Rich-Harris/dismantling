@@ -1,0 +1,32 @@
+<div class='speaker-notes'>
+	<div class='speaker-notes-inner'>
+		{{yield}}
+	</div>
+</div>
+
+<style>
+	.speaker-notes {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		bottom: 0;
+		padding: 1em;
+		display: none;
+	}
+
+	.speaker-notes-inner {
+		background-color: white;
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius: 0.2em;
+		box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+		padding: 1em;
+	}
+</style>
+
+<script>
+	component.exports = {
+		onrender () {
+			this.notes = this.find( '*' ).textContent;
+		}
+	};
+</script>

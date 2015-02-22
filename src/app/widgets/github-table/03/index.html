@@ -1,0 +1,84 @@
+<h1>Front-end tools</h1>
+
+<table>
+	<thead>
+		<tr>
+			<th class='{{field === "name" ? "selected" : ""}}' on-click='sortBy("name")'>Project
+			<th class='{{field === "stars" ? "selected" : ""}}' on-click='sortBy("stars")'>GitHub stars
+			<th class='{{field === "contributors" ? "selected" : ""}}' on-click='sortBy("contributors")'>Contributors
+			<th class='{{field === "lastCommit" ? "selected" : ""}}' on-click='sortBy("lastCommit")'>Last commit
+		</tr>
+	</thead>
+
+	<tbody>
+		{{#each sort(repos, field)}}
+			<tr>
+				<td>{{name}}
+				<td>{{stars}}
+				<td>{{contributors}}
+				<td>{{lastCommit}}
+			</tr>
+		{{/each}}
+	</tbody>
+</table>
+
+<style>
+	table {
+		border-spacing: 0;
+		width: 100%;
+		max-width: 42em;
+	}
+
+	th, td {
+		text-align: left;
+		border-bottom: 1px solid #eee;
+		padding: 0.5em;
+		white-space: pre;
+	}
+
+	th {
+		cursor: pointer;
+		border-bottom: 3px solid #ccc;
+	}
+
+	th::before {
+		content: '\25BD';
+		padding: 0 0.5em 0 0;
+		font-size: 0.8em;
+		color: #ddd;
+	}
+
+	th.selected::before {
+		content: '\25BC';
+		color: #999;
+	}
+</style>
+
+<script>
+	const getData = require( '../getData' );
+
+	component.exports = {
+		data: {
+			repos: [],
+			field: 'name',
+
+			sort ( repos, field ) {
+				return repos.slice().sort( ( a, b ) => {
+					return typeof a[field] === 'string' ?
+						a[field] < b[field] ? -1 : 1 :
+						b[field] - a[field];
+				});
+			}
+		},
+
+		oninit () {
+			getData().then( repos => {
+				this.set({ repos });
+			});
+		},
+
+		sortBy ( field ) {
+			this.set({ field });
+		}
+	};
+</script>

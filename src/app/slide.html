@@ -1,0 +1,77 @@
+<section
+	class='slide'
+	style='background-color: {{bg}};
+	       color: {{fg}};
+	       background-image: {{#if img}}url({{img}}){{else}}none{{/if}};'
+>
+	{{yield}}
+</section>
+
+<style>
+	.slide {
+		position: relative;
+		width: 100vw;
+		height: 100vh;
+		padding: 0;
+		box-sizing: border-box;
+		background: #f9f9f9 no-repeat 50% 50%;
+		background-size: cover;
+		overflow: hidden;
+
+		-webkit-transition: all 0.4s;
+		-moz-transition: all 0.4s;
+		-ms-transition: all 0.4s;
+		-o-transition: all 0.4s;
+		transition: all 0.4s;
+	}
+</style>
+
+<script>
+	component.exports = {
+		data: {
+			currentStep: 1,
+			steps: 1
+		},
+
+		onrender () {
+			this.container = this.find( '.slide' );
+		},
+
+		isCurrent () {
+			var bcr, midY;
+
+			bcr = this.bcr();
+			midY = ( bcr.top + bcr.bottom ) / 2;
+
+			if ( midY > 0 && midY < window.innerHeight ) {
+				return true;
+			}
+		},
+
+		bcr () {
+			return this.container.getBoundingClientRect();
+		},
+
+		next () {
+			if ( this.get( 'currentStep' ) < this.get( 'steps' ) ) {
+				this.add( 'currentStep' );
+				return true;
+			}
+		},
+
+		previous () {
+			if ( this.get( 'currentStep' ) > 1 ) {
+				this.subtract( 'currentStep' );
+				return true;
+			}
+		},
+
+		gotoFirstStep () {
+			this.set( 'currentStep', 1 );
+		},
+
+		gotoLastStep () {
+			this.set( 'currentStep', this.get( 'steps' ) );
+		}
+	};
+</script>

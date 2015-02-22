@@ -1,0 +1,50 @@
+<h1>Front-end tools</h1>
+
+<table>
+	<thead>
+		<tr>
+			<th>Name
+			<th>GitHub stars
+			<th>Contributors
+			<th>Last commit
+		</tr>
+	</thead>
+
+	<tbody>
+		{{#each repos}}
+			<tr>
+				<td>{{name}}
+				<td>{{stargazers_count}}
+				<td>{{contributors}}
+				<td>{{lastCommit}}
+			</tr>
+		{{/each}}
+	</tbody>
+</table>
+
+<style>
+	table {
+		border-spacing: none;
+	}
+
+	th, td {
+		text-align: left;
+		border-bottom: 1px solid #eee;
+	}
+</style>
+
+<script>
+	const getData = require( '../getData' );
+
+	component.exports = {
+		data: {
+			repos: null
+		},
+
+		oninit () {
+			getData().then( repos => {
+				this.set({ repos });
+			});
+		}
+	};
+</script>

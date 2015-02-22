@@ -1,0 +1,67 @@
+<h1>Front-end tools</h1>
+
+<table>
+	<thead>
+		<tr>
+			<th on-click='sortBy("name")'>Name
+			<th on-click='sortBy("stargazers_count")'>GitHub stars
+			<th on-click='sortBy("contributors")'>Contributors
+			<th on-click='sortBy("lastCommit")'>Last commit
+		</tr>
+	</thead>
+
+	<tbody>
+		{{#each sortedRepos}}
+			<tr>
+				<td>{{name}}
+				<td>{{stargazers_count}}
+				<td>{{contributors}}
+				<td>{{lastCommit}}
+			</tr>
+		{{/each}}
+	</tbody>
+</table>
+
+<script>
+	const getData = require( '../getData' );
+
+	component.exports = {
+		data: {
+			repos: [],
+			field: 'name'
+		},
+
+		computed: {
+			sortedRepos () {
+				let field = this.get( 'field' );
+				let repos = this.get( 'repos' );
+
+				let reverse = this.get( 'reverse' );
+
+				return repos.slice().sort( ( a, b ) => {
+					return reverse ?
+						a[field] < b[field] ? 1 : -1 :
+						b[field] < a[field] ? 1 : -1 ;
+				});
+			}
+		},
+
+		oninit () {
+			getData().then( repos => {
+				this.set({ repos });
+			});
+		},
+
+		sortBy ( field ) {
+			if ( field === this.get( 'field' ) ) {
+				this.toggle( 'reverse' );
+			} else {
+				this.set({
+					field,
+					reverse: false
+				});
+			}
+
+		}
+	};
+</script>
