@@ -212,7 +212,7 @@ So when the designer comes along and says 'we should have the date and the time 
 
 There's absolutely no way that it could break anything else. We don't have to smother our application in tests to know that we're doing the right thing.
 
-Some of you might have other concerns - you might be worrying about XSS vulnerabilities, or pernicious side-effects, or performance problems with `eval()`. I'll talk about that later, but for now I'll just say that you don't need to worry - we've got it covered.
+Some of you might have other concerns - you might be worrying about XSS vulnerabilities, or pernicious side-effects, or performance problems with `eval()`. We're not blindly evaling anything - we're actually parsing the JavaScript into an AST, and the parser forbids anything that could result in those effects - no assignment operators, no function literals, no `new` keyword and so on, which means we can evaluate these expressions in a safe and efficient way.
 
 ---
 
@@ -332,7 +332,7 @@ var interval = setInterval( () => {
 <Clock datetime='{{datetime}}'/>
 ```
 
-This is very similar to the web components idea, except look ma, no polyfills!
+This is very similar to the web components idea, except look ma, no polyfills! And it turns out that this way of building apps - creating a tree of components that describe how we want our app to look at any given time, and just repeatedly throwing data at it - really, really works.
 
 ---
 
@@ -342,7 +342,7 @@ At the Guardian, we've taken the idea of components to its logical extreme. Our 
 <!-- example -->
 ```
 
-The template, styles and behaviours - sometimes even the data - that belong to a particular component are written right there into the component definition. Our build process turns these component files into JavaScript modules alongside our various helper functions, which are then browserified together into a distributable bundle.
+The template, styles and behaviours - sometimes even the data - that belong to a particular component are written right there into the component definition. Our build process turns these HTML component files into JavaScript modules alongside our various helper functions, which are then browserified together into a distributable bundle.
 
 It's a heretical way of working, but one that makes us incredibly productive compared to how we used to do things. The relationship between our HTML, CSS and JavaScript is clear and precise, and that becomes so important when you have to work on code that you didn't write - all of us on the team have at some point had the experience of having to fix someone else's bug, and a component-driven architecture is the thing that has always saved us, because it's so easy to figure out where the problem is.
 
@@ -362,8 +362,22 @@ Here's another 'best practice' that took root somewhere between DHTML and Web 2.
 <div class='target'>
 	<!-- content goes here -->
 </div>
+```
 
-document.querySelector( '.start' ).addEventListener( 'click', start );
+```js
+// bad!
+function redraw () {
+	// code goes here
+}
+
+// good!
+(function () {
+	function redraw () {
+		// code goes here
+	}
+
+	document.querySelector( '.target' ).addEventListener( 'mousemove', redraw );
+})();
 ```
 
 In the first case, the *action* (moving the mouse), and the *intention* (redrawing something) are very clearly linked. In the second case, that's not true - we have a class name, but it's not obvious what it's for. Is it for styling something, or does it just exist so that we can target it in our JavaScript? In many apps, it's both! It's a bad form of coupling.
@@ -418,3 +432,126 @@ The first thing that gets created is what we refer to internally as the viewmode
 Next, we create the virtual DOM from our template. As items in the virtual DOM get created, they register themselves as dependents of particular keypaths as necessary.
 
 The final step is to render the virtual DOM. In most cases, you're rendering the virtual DOM to the real one - that's what I've been showing you so far in this presentation - but you can just as easily render it to HTML, which means that you can run Ractive in node and do server-side rendering.
+
+So now we've got our Ractive instance, and we want to update it. It goes something like this:
+
+* `ractive.set('name', 'everybody')
+* This creates a batch of operations
+* The viewmodel is told about the change. It checks that something has in fact changed - if not, nothing need happen
+* The viewmodel looks at its list of dependents and sees which depend on `name`. If there are any computed properties that depend on `name`, directly or indirectly, the viewmodel figures out if any of those properties need to be included in the update.
+* The virtual DOM dependents are told about the change. If they need to do any work, they don't do it straight away, because that could result in duplicate work (if an attribute had two mustache tags, for example). Instead, they add themselves to the batch of operations
+* Once that's done, the batch is 'flushed', and the DOM is updated.
+
+This all happens synchronously, which means that as soon as you've called `ractive.set()`, you can query the DOM, which turns out to be essential for a lot of visual work where you often need to do things like measure elements after an update. So your code is very predictable, and you have very precise control, but you still get the performance benefits of batched DOM updates.
+
+Individual elements in a Ractive template can have intro and outro transitions, like this:
+
+```html
+<!-- TODO -->
+```
+
+So even though the initial update is synchronous, `ractive.set()` actually returns a Promise, which resolves once any transitions have completed. This makes it easy to create chained sequences, like this.
+
+```html
+<!-- TODO -->
+```
+
+---
+
+That was a fairly brief demonstration of what it's like to build apps with Ractive. Hopefully it's piqued your interest, and convinced you that as brilliant as React is, it's not the only game in town, and the Ractive/Meteor/Ember approach has a lot to recommend it.
+
+But that's not really the point of this presentation.
+
+---
+
+One of the big promises of the digital revolution was the promise of disintermediation. We wanted to use the power of the network to connect people - buyers to sellers, borrowers to lenders, artists to fans, people on Craiglist with weird fetishes to other people on Craigslist with weird fetishes.
+
+And we did it! We got rid of all those intermediaries, in all sorts of arenas. We haven't exactly resurrected Athenian democracy, but we live in a world where politicians answer directly to the people, and activists can tell the world about what's happening in places like Ferguson.
+
+But there's one group of intermediaries that we haven't got rid of - ourselves. If you want to create interactive applications - as a journalist, or as an educator, or an academic, or a community leader, or an artist, or an activist - if you want to use web technologies to express ideas that can't be expressed by other means, or to connect with people who you couldn't otherwise connect with - you can't. Unless you go through us.
+
+We are an extraordinarily powerful group of people. It might not feel that way, but we are. We have extraordinary economic power, because the need for software is insatiable. We joke about how annoying it is to get contacted by recruiters, who want to get us well-paid jobs doing something we'd be doing for fun anyway! Meanwhile, other people's jobs are being automated into oblivion.
+
+And we have extraordinary social power, because we're the ones making the systems and services that form the fabric of modern society. The assumptions that we have - about the nature of identity, about society, about the right to privacy, about which industries deserve to be disrupted - these assumptions find expression in the things we create. It's unavoidable.
+
+So we have to ask ourselves: are we the best people to wield that power? [YOU LOT?] Is it really conceivable that this tiny, vastly unrepresentative sliver of humanity, is capable of making the right decisions on behalf of everyone else? It's mathematically impossible, even if you don't think that Silicon Valley's outsize influence on our culture is a problem.
+
+---
+
+[img from http://management.curiouscatblog.net/2012/02/22/learn-to-code-to-help-your-career/]
+
+The stock answer is 'learn to code'. If you want to be part of the modern economy, learn to code. God, how many times did we hear that in 2014? And yes, the learn to code movement is a good thing. But for most people, the 'learn to code' journey goes something like this:
+
+* Learn about variables and for loops and data types. (This is a bit like learning French by reading about how to conjugate verbs and pluralise nouns before being exposed to any vocabulary or examples of people speaking French.) There's a huge focus on writing syntactically correct code, and almost none on code comprehension, or how to develop the right mental habits for modelling the world as a programmer would.
+* Go through a contrived example in a interactive coding environment, where friendly characters correct your mistakes, and offer to fix your code if you get stuck.
+* Think 'I can do this! It's *way* easier that I thought it would be.'
+* Get to the end of the first set of tutorials, chomping at the bit to create something of your own.
+* Start writing some code, which, without the handrails, is buggy and chaotic. Tasks which seem like they should be simple, like representing state consistently throughout the page, involve a lot of really boring, hard-to-write code.
+* Wonder 'am I doing this right?' and start Googling for help
+* Discover a list of the bare minimum you're supposed to understand in order to build stuff on the web:
+	* HTML validation
+	* meta charset
+	* DNS
+	* image compression
+	* SEO
+	* Sitemaps
+	* RSS
+	* robots.txt
+	* CSS preprocessors (SASS or LESS? you have to have an opinion)
+	* AMD
+	* CommonJS
+	* ES6 modules
+	* Transpilers
+	* Grunt
+	* Gulp
+	* Minifiers
+	* jQuery
+	* Backbone
+	* Angular
+	* Linting
+	* Tests
+	* Cross-browser testing tools
+	* Accessibility
+	* Internationalisation
+	* Analytics
+	* GitHub
+	* The command line
+	* npm
+	* Canvas and WebGL
+	* SVG
+	* Devtools
+	* Sublime
+	* Bootstrap
+* 'But I just wanted to build stuff?'
+
+https://twitter.com/webreflection/status/501446017292988417
+
+And so many people just give up at that point, because they feel like the barriers are too high for them to overcome. It takes a very stubborn person, with a lot of free time, to fight past that initial feeling of powerlessness, and get to the point where you have some idea what you're doing.
+
+I've seen it happen, so many times, and every time it's a tragedy. Because those people have ideas, but they can't share them with the rest of us, and our culture is dimininished as a result.
+
+http://www.producthunt.com/posts/ractive-js
+
+I believe that the best way to help people break through that barrier is to eliminate that powerlessness, by giving people tools that allow them to be productive *before* they understand all the underlying concepts - just like when you're learning French, you learn how to ask for a cheese sandwich before you learn about the pluperfect subjunctive tense.
+
+But that's not what our community chooses to focus on. When we create tools, we create them for ourselves and for each other - people who are already inside the circle. There's been so much innovation in our world in the last few years, and it's fantastic, but so many of these tools simply aren't accessible to the vast majority of programmers who just want to bloody build something. No-one - no-one - should have to learn what transclusion and dependency injection are in order to build an interactive app. Nor should they have to install a special syntax highlighter in order to write templates.
+
+Here's a checklist of a few things you can do when you're building tools for other programmers:
+
+* Write the README first. Invent the best API you can, and then go away and implement it. Too many programmers do the implementation first and then worry about the API, and that's backwards, because you can always fix a lousy implementation, but APIs are very hard to change
+* If you can eliminate dependencies, do it! If you can't, make sure you offer a build with dependencies included. This is important.
+* Use the Universal Module Definition, so that your library works as an AMD module, a CommonJS module, or as a `<script>` tag.
+* Publish on npm, but have a download link as well.
+* Have good error messages. If you can link to your documentation in your error messages, do it.
+* Don't make people touch the command line if you can help it. As far as possible, build steps should be optional.
+* Work on your documentation. If you can provide a REPL or an interactive tutorial, do it.
+* Eliminate jargon.
+* Most importantly, try and put yourself in the shoes of a beginner.
+
+Ractive isn't going to single-handedly break down the wall. It would be delusional to think otherwise. And we don't nail everything on that list - most, but not all. But when we on the Ractive team make decisions about what goes into the library, we always ask ourselves: will this make it easier for non-experts, or will it simply confuse them? And a funny thing happens when you make tools that try to guide novices into the pit of success: you make it easier for everyone.
+
+---
+
+I'm optimistic that the people in this room will feel the same way that I do, because everyone I talk to in the tech industry sincerely wants to see web development become more inclusive. My message for you today is that you can make a real difference by thinking about the ways in which you can help dismantle the barriers to entry. And by the way you should all be using Ractive.
+
+Thank you.
