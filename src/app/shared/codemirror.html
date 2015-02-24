@@ -24,7 +24,7 @@
 
 	component.exports = {
 		onrender: function () {
-			var component = this, mode, editor, doc, updating;
+			var component = this, mode, editor, doc, updating, targetValueSequence, targetValueSequenceIndex;
 
 			mode = this.get( 'mode' );
 
@@ -53,22 +53,42 @@
 				updating = false;
 			});
 
-			editor.on( 'keydown',( editor, event ) => {
-				let targetValue;
+			if ( targetValueSequence = this.get( 'targetValueSequence' ) ) {
+				targetValueSequenceIndex = 0;
+				this.set( 'targetValue', targetValueSequence[0] );
+			}
+
+			editor.on( 'keydown', ( editor, event ) => {
+				this.fire( 'keydown', event, editor );
 
 				if ( !event.metaKey && ( event.which >= 37 && event.which <= 40 ) ) {
 					event.stopPropagation();
+					return;
 				}
 
-				else if ( targetValue = this.get( 'targetValue' ) ) {
+				// this could be set after the fact
+				if ( this.get( 'readonly' ) ) {
 					event.preventDefault();
+					return;
+				}
 
+				let targetValue = this.get( 'targetValue' );
+				let value = editor.getValue();
+
+				if ( !targetValue ) {
+					return;
+				}
+
+				event.preventDefault();
+
+				if ( value !== targetValue && !event.metaKey ) {
 					let value = editor.getValue();
 					let diff = Diff.diffChars( value, targetValue );
 					let change;
 
 					// if no change, bug out
 					if ( diff.length === 1 && !diff[0].added && !diff[0].removed ) {
+						console.log( 'this should never happen' );
 						return;
 					}
 
@@ -87,7 +107,7 @@
 					change = diff[0];
 
 					if ( change ) {
-						let chars = Math.ceil( Math.random() * 2 );
+						let chars = Math.ceil( Math.random() * 3 );
 						//chars = 1;
 
 						if ( change.added ) {
@@ -101,12 +121,24 @@
 							throw new Error( 'Unexpected change object' );
 						}
 
-						editor.setValue( value );
+						this.set( 'value', value );
 					}
 
 					// set cursor position to location of first difference
 					let pos = editor.posFromIndex( cursorPos );
 					editor.setCursor( pos );
+
+					if ( value === targetValue ) {
+						this.fire( 'target' );
+
+						// make editor readonly until typing stops
+						pauseEditor( this );
+
+						if ( targetValueSequence ) {
+							targetValueSequenceIndex += 1;
+							this.set( 'targetValue', targetValueSequence[targetValueSequenceIndex] );
+						}
+					}
 				}
 			});
 
@@ -127,4 +159,20 @@
 
 		isolated: true
 	};
+
+	function pauseEditor ( instance ) {
+		instance.set( 'readonly', true );
+
+		let timeout;
+
+		let listener = instance.on( 'keydown', () => {
+			clearTimeout( timeout );
+			timeout = setTimeout( next, 500 );
+		});
+
+		function next () {
+			listener.cancel();
+			instance.set( 'readonly', false );
+		}
+	}
 </script>

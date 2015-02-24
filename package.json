@@ -9,7 +9,7 @@
     "start": "gobble"
   },
   "devDependencies": {
-    "gobble": "^0.7.3",
+    "gobble": "^0.7.4",
     "gobble-babel": "^4.0.0",
     "gobble-browserify": "^0.2.0",
     "gobble-cli": "^0.3.5",
@@ -20,8 +20,10 @@
     "gobble-sorcery": "^0.2.4"
   },
   "dependencies": {
+    "babel-core": "^4.4.6",
     "codemirror": "^5.0.0",
     "diff": "^1.2.2",
+    "eval2": "^0.3.1",
     "handlebars": "^3.0.0",
     "moment": "^2.9.0",
     "mustache": "^1.1.0",

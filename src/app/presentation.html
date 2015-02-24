@@ -31,7 +31,7 @@
 		font-size: 3em;
 	}
 
-	.horizontal-split {
+	.horizontal-split, .vertical-split {
 		width: 100%;
 		height: 100%;
 	}
@@ -50,6 +50,22 @@
 	.split-right {
 		top: 0;
 		right: 0;
+	}
+
+	.split-top, .split-bottom {
+		position: absolute;
+		width: 100%;
+		height: 50%;
+	}
+
+	.split-top {
+		top: 0;
+		left: 0;
+	}
+
+	.split-bottom {
+		bottom: 0;
+		left: 0;
 	}
 
 	h1 {

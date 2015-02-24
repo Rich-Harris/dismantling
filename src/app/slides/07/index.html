@@ -105,9 +105,11 @@
 		},
 
 		refresh () {
+			console.time( 'refresh' );
 			this.target.innerHTML = this.compiled({
 				rows: this.rows
 			});
+			console.timeEnd( 'refresh' );
 		},
 
 		transitions: {
