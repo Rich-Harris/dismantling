@@ -14,13 +14,14 @@
 
 <script>
 	const CodeMirror = require( 'codemirror' );
-	const Diff = require( 'diff' );
-
-	window.Diff = Diff;
+	const DiffMatchPatch = require( './DiffMatchPatch' );
+	const dmp = new DiffMatchPatch();
 
 	require( 'codemirror/mode/htmlmixed/htmlmixed' );
 	require( 'codemirror/mode/javascript/javascript' );
 	require( 'codemirror/mode/css/css' );
+
+	require( 'codemirror/keymap/sublime' );
 
 	component.exports = {
 		onrender: function () {
@@ -39,7 +40,8 @@
 				mode: mode,
 				theme: this.get( 'theme' ) || 'ractive',
 				lineWrapping: this.get( 'wrap' ),
-				readOnly: this.get( 'readonly' )
+				readOnly: this.get( 'readonly' ),
+				keyMap: 'sublime'
 			});
 			doc = editor.getDoc();
 
@@ -83,11 +85,17 @@
 
 				if ( value !== targetValue && !event.metaKey ) {
 					let value = editor.getValue();
-					let diff = Diff.diffChars( value, targetValue );
+
+					// console.time( 'diffing with jsdiff' );
+					// let diff = Diff.diffChars( value, targetValue );
+					// console.timeEnd();
+
+					let diff = dmp.diff_main( value, targetValue );
+
 					let change;
 
 					// if no change, bug out
-					if ( diff.length === 1 && !diff[0].added && !diff[0].removed ) {
+					if ( diff.length === 1 && !diff[0][0] ) {
 						console.log( 'this should never happen' );
 						return;
 					}
@@ -96,27 +104,27 @@
 					while ( diff.length ) {
 						change = diff[0];
 
-						if ( change.added || change.removed ) {
+						if ( change[0] ) {
 							break;
 						}
 
-						cursorPos += change.count;
+						cursorPos += change[1].length;
 						diff.shift();
 					}
 
 					change = diff[0];
 
 					if ( change ) {
-						let chars = Math.ceil( Math.random() * 3 );
+						let chars = Math.ceil( Math.random() * 30 );
 						//chars = 1;
 
-						if ( change.added ) {
+						if ( change[0] === 1 ) {
 							// we should add some characters
-							value = value.slice( 0, cursorPos ) + change.value.slice( 0, chars ) + value.slice( cursorPos );
-							cursorPos += Math.min( chars, change.count );
-						} else if ( change.removed ) {
+							value = value.slice( 0, cursorPos ) + change[1].slice( 0, chars ) + value.slice( cursorPos );
+							cursorPos += Math.min( chars, change[1].length );
+						} else if ( change[0] === -1 ) {
 							// we should remove some characters
-							value = value.slice( 0, cursorPos ) + value.slice( cursorPos + Math.max( chars, change.count ) );
+							value = value.slice( 0, cursorPos ) + value.slice( cursorPos + Math.max( chars, change[1].length ) );
 						} else {
 							throw new Error( 'Unexpected change object' );
 						}
