@@ -1,0 +1,130 @@
+{{#if label}}
+	<p class='label'>{{label}}</p>
+{{/if}}
+
+<div class='codemirror-container' style='{{#height}}height: {{height}};{{/height}}'>
+	<textarea></textarea>
+</div>
+
+<style>
+	.codemirror-container {
+		margin: 0 0 1em 0;
+	}
+</style>
+
+<script>
+	const CodeMirror = require( 'codemirror' );
+	const Diff = require( 'diff' );
+
+	window.Diff = Diff;
+
+	require( 'codemirror/mode/htmlmixed/htmlmixed' );
+	require( 'codemirror/mode/javascript/javascript' );
+	require( 'codemirror/mode/css/css' );
+
+	component.exports = {
+		onrender: function () {
+			var component = this, mode, editor, doc, updating;
+
+			mode = this.get( 'mode' );
+
+			if ( mode === 'json' ) {
+				mode = {
+					name: 'javascript',
+					json: true
+				};
+			}
+
+			editor = CodeMirror.fromTextArea( this.find( 'textarea' ), {
+				mode: mode,
+				theme: this.get( 'theme' ) || 'ractive',
+				lineWrapping: this.get( 'wrap' ),
+				readOnly: this.get( 'readonly' )
+			});
+			doc = editor.getDoc();
+
+			editor.on( 'change', () => {
+				if ( updating || this.get( 'readonly' ) ) {
+					return;
+				}
+
+				updating = true;
+				component.set( 'value', editor.getValue() );
+				updating = false;
+			});
+
+			editor.on( 'keydown',( editor, event ) => {
+				let targetValue;
+
+				if ( !event.metaKey && ( event.which >= 37 && event.which <= 40 ) ) {
+					event.stopPropagation();
+				}
+
+				else if ( targetValue = this.get( 'targetValue' ) ) {
+					event.preventDefault();
+
+					let value = editor.getValue();
+					let diff = Diff.diffChars( value, targetValue );
+					let change;
+
+					// if no change, bug out
+					if ( diff.length === 1 && !diff[0].added && !diff[0].removed ) {
+						return;
+					}
+
+					let cursorPos = 0;
+					while ( diff.length ) {
+						change = diff[0];
+
+						if ( change.added || change.removed ) {
+							break;
+						}
+
+						cursorPos += change.count;
+						diff.shift();
+					}
+
+					change = diff[0];
+
+					if ( change ) {
+						let chars = Math.ceil( Math.random() * 2 );
+						//chars = 1;
+
+						if ( change.added ) {
+							// we should add some characters
+							value = value.slice( 0, cursorPos ) + change.value.slice( 0, chars ) + value.slice( cursorPos );
+							cursorPos += Math.min( chars, change.count );
+						} else if ( change.removed ) {
+							// we should remove some characters
+							value = value.slice( 0, cursorPos ) + value.slice( cursorPos + Math.max( chars, change.count ) );
+						} else {
+							throw new Error( 'Unexpected change object' );
+						}
+
+						editor.setValue( value );
+					}
+
+					// set cursor position to location of first difference
+					let pos = editor.posFromIndex( cursorPos );
+					editor.setCursor( pos );
+				}
+			});
+
+			this.observe( 'value', function ( value ) {
+				if ( updating ) {
+					return;
+				}
+
+				updating = true;
+				editor.setValue( value || '' );
+				updating = false;
+			});
+
+			this.on( 'teardown', function () {
+				editor.toTextArea();
+			});
+		},
+
+		isolated: true
+	};
+</script>

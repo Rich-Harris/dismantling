@@ -6,7 +6,11 @@ Instead, I want to talk about the barrier you face after you've crossed that fir
 
 Now, there's a certain genre of tech conference talk that you're probably familiar with - a speaker, rather like me, stands in front of an audience, rather like you, and speaks in generalities about a nebulous proposition, such as that programming is 'too damn hard', perhaps with some code samples and animated GIFs, before mentioning, about half way through - almost as an afterthough - that they've been working on a library or tool that's designed to address the problem at hand. And then the rest of the talk is basically a sales pitch.
 
-But this isn't that kind of talk. Instead, I'm going to do the sales pitch first and then get on with the nebulous generalities. The thing I'm selling is Ractive.js, which is a UI library designed to drastically simplify the creation of rich interactive web applications. I'm going to show you what it can do, and then I'm going to talk a little bit about how it works, but first I need to talk about the context in which it was created.
+But this isn't that kind of talk.
+
+---
+
+Instead, I'm going to do the sales pitch first and then get on with the nebulous pontificating. The thing I'm selling is Ractive.js, which is a UI library designed to drastically simplify the creation of rich interactive web applications. I'm going to show you what it can do, and then I'm going to talk a little bit about how it works, but first I need to talk about the context in which it was created.
 
 ---
 
@@ -54,7 +58,7 @@ If you're using SVG, you can't use this approach at all, because there's no SVG 
 
 ---
 
-So that's string-bsaed templating - Mustache, Handlebars, Underscore templates, EJS, dust.js, and a million others all follow that basic path. There is an alternative, and that's DOM-based templating, but in my view it's an approach with severe limitations:
+So that's string-based templating - Mustache, Handlebars, Underscore templates, EJS, dust.js, and a million others all follow that basic path. There is an alternative, and that's DOM-based templating, but in my view it's an approach with severe limitations:
 
 * The expressiveness of DOM-based templates is limited to what's valid HTML, which means you end up complecting content with control flow.
 * Server-side rendering is basically impossible without Rube Goldberg-esque systems involving JSDOM or PhantomJS
@@ -63,6 +67,8 @@ So that's string-bsaed templating - Mustache, Handlebars, Underscore templates, 
 The new `<template>` tag has solved some of the problems of DOM-based templating, but fundamentally you're asking the DOM to do something it isn't designed for, and writing this sort of thing (`document.importNode(document.querySelector('template').content,true)` is *exactly* what we've been trying to avoid.
 
 ---
+
+[WALL]
 
 But what if you could use the declarative power of template-driven app development, without all those sacrifices? What if you could treat your template as a blueprint for an interactive application, rather than a tool for stamping out HTML?
 

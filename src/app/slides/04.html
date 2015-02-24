@@ -1,0 +1,42 @@
+<link rel='ractive' href='../Slide.html'>
+<link rel='ractive' href='../speaker-notes.html'>
+
+<link rel='ractive' href='../widgets/github-table/03/index.html' name='github-table'>
+<link rel='ractive' href='../widgets/clock/01/index.html' name='clock'>
+
+<Slide img='images/thinking-h.gif' steps='3' currentStep='{{step}}'>
+	{{#if step === 2}}
+		<strong intro='fade:2000' outro='fade' class='centered'>if a tool could help us build this stuff, what would it look like?</strong>
+	{{/if}}
+
+	{{#if step === 3}}
+		<div class='centered'>
+			<img class='large' src='images/devtools.png' intro-outro='fade'/>
+		</div>
+	{{/if}}
+
+	<speaker-notes>
+
+	</speaker-notes>
+</Slide>
+
+<style>
+	strong {
+		color: white;
+		font-size: 3em;
+		text-align: center;
+		text-shadow: 0 0 5px black, 0 0 5px black, 0 0 5px black;
+	}
+</style>
+
+<script>
+	component.exports = {
+		data: {
+			step: 1
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>

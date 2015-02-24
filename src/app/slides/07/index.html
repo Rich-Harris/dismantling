@@ -1,0 +1,118 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../../shared/codemirror.html' name='Codemirror'>
+
+<Slide steps='2' currentStep='{{step}}'>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<Codemirror mode='html' value='[[template]]' readonly>
+		</div>
+
+		<div class='split-right'>
+			<button on-click='changeOne()'>change one piece of data</button>
+			<div class='target' on-mousewheel='handleScroll()' on-click='sortRows(event)'></div>
+		</div>
+	</div>
+
+	{{#if step === 2}}
+		<div class='centered front'>
+			<video class='large' src='video/duct-tape.mp4' intro='loadAndFade' outro='fadeAndDispose'></video>
+		</div>
+	{{/if}}
+</Slide>
+
+<style>
+	.target {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow-y: scroll;
+	}
+</style>
+
+<script>
+	const Handlebars = require( 'handlebars' );
+	const data = require( '../../shared/table-data' );
+
+	component.exports = {
+		data: {
+			step: 1,
+			template: `<table>
+	<thead>
+		<tr>
+			<th data-sort='firstName'>first</th>
+			<th data-sort='lastName'>last</th>
+			<th data-sort='company'>company</th>
+			<th data-sort='age'>age</th>
+			<th data-sort='email'>email</th>
+			<th data-sort='phone'>phone number</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{{#each rows}}
+			<tr>
+				<td>{{firstName}}</td>
+				<td>{{lastName}}</td>
+				<td>{{company}}</td>
+				<td>{{age}}</td>
+				<td>{{email}}</td>
+				<td>{{phone}}</td>
+			</tr>
+		{{/each}}
+	</tbody>
+</table>`
+		},
+
+		onrender () {
+			this.target = this.find( '.target' );
+
+			let template = this.get( 'template' );
+			this.compiled = Handlebars.compile( template );
+
+			this.rows = data;
+			this.refresh();
+		},
+
+		handleScroll () {
+			this.event.original.preventDefault();
+			this.target.scrollTop -= this.event.original.wheelDelta;
+		},
+
+		changeOne () {
+			let row = this.rows[0];
+			let age = row.age;
+
+			while ( age === row.age ) {
+				age = 20 + ~~( Math.random() * 30 );
+			}
+
+			row.age = age;
+			this.refresh();
+		},
+
+		sortRows ( event ) {
+			let field = event.original.target.getAttribute( 'data-sort' );
+
+			this.rows = data.slice().sort( ( a, b ) => {
+				return typeof a[field] === 'number' ?
+					a[field] - b[field] :
+					a[field] < b[field] ? -1 : 1;
+			});
+
+			this.refresh();
+		},
+
+		refresh () {
+			this.target.innerHTML = this.compiled({
+				rows: this.rows
+			});
+		},
+
+		transitions: {
+			loadAndFade: require( '../../shared/loadAndFade' ),
+			fadeAndDispose: require( '../../shared/fadeAndDispose' )
+		}
+	};
+</script>

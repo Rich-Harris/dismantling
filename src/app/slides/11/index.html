@@ -1,0 +1,47 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../../shared/codemirror.html' name='Codemirror'>
+
+<Slide>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<Codemirror mode='html' value='[[template]]' readonly>
+		</div>
+
+		<div class='split-right'>
+			<label>
+				<input disabled type='checkbox' checked='{{keepFocus}}'>
+				keep focus
+			</label>
+
+			<label>
+				<input disabled type='checkbox' checked='{{keepCursor}}'>
+				maintain cursor position
+			</label>
+
+			<div class='target'>
+				{{>template}}
+			</div>
+		</div>
+	</div>
+</Slide>
+
+<style>
+
+</style>
+
+<script>
+	const template = `<input placeholder="What's your name?" value="{{name}}">
+<p>Hello, {{name}}!</p>`;
+
+	component.exports = {
+		data: {
+			template
+		},
+
+		partials: {
+			template
+		}
+	};
+</script>

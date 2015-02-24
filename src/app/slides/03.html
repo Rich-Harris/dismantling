@@ -1,18 +1,48 @@
-<link rel='ractive' href='../slide.html'>
+<link rel='ractive' href='../Slide.html'>
 <link rel='ractive' href='../speaker-notes.html'>
 
 <link rel='ractive' href='../widgets/github-table/03/index.html' name='github-table'>
 <link rel='ractive' href='../widgets/clock/01/index.html' name='clock'>
 
-<slide>
-	<div class='centered'>
-		<github-table/>
-		<clock/>
-	</div>
-</slide>
+<Slide
+	img='images/Guardian-USA.jpg'
+	steps='3'
+	currentStep='{{step}}'
+	bg='{{step === 3 ? "rgba(255,255,255,0.8)" : ""}}'
+>
+	{{#if step ===2}}
+		<div class='centered'>
+			<video class='large' src='video/composite.mp4' intro='loadAndFade' outro='fadeAndDispose'></video>
+		</div>
+	{{/if}}
+
+	{{#if step === 3}}
+		<div class='centered'>
+			<ul class='large-list'>
+				<li>visual
+				<li>no brief!
+				<li>we don't control the page
+				<li>extreme time pressure
+			</ul>
+		</div>
+	{{/if}}
+
+	<speaker-notes>
+		I'm a journalist at the Guardian newspaper, and I've been a journalist for most of my career. We have an office down the road in SoHo, where I work on the interactive news team with three others. It just so happens that in my current job, instead of writing English, I write JavaScript.
+
+		These are a few of the recent projects my team and I have worked on [VIDEOS]. They range from multi-part investigations into the immigration crisis to exploratory data visualisations around voter rights in different states, through to epidemiological simulations, and thoroughly frivolous things such as a real-time translation of the State of the Union address into emojis.
+	</speaker-notes>
+</Slide>
 
 <script>
 	component.exports = {
+		data: {
+			step: 1
+		},
 
+		transitions: {
+			loadAndFade: require( '../shared/loadAndFade' ),
+			fadeAndDispose: require( '../shared/fadeAndDispose' )
+		}
 	};
 </script>

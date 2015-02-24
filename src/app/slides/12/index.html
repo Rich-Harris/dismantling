@@ -1,0 +1,109 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../../shared/codemirror.html' name='Codemirror'>
+
+<Slide>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<Codemirror mode='html' value='[[template]]' readonly>
+		</div>
+
+		<div class='split-right'>
+			<button on-click='changeOne()'>change one piece of data</button>
+			<div class='target' on-mousewheel='handleScroll()' on-click='sortRows(event)'>
+				{{>template}}
+			</div>
+		</div>
+	</div>
+</Slide>
+
+<style>
+	.target {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow-y: scroll;
+	}
+</style>
+
+<script>
+	const data = require( '../../shared/table-data' );
+
+	const template = `<table>
+	<thead>
+		<tr>
+			<th data-sort='firstName'>first</th>
+			<th data-sort='lastName'>last</th>
+			<th data-sort='company'>company</th>
+			<th data-sort='age'>age</th>
+			<th data-sort='email'>email</th>
+			<th data-sort='phone'>phone number</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{{#each rows}}
+			<tr>
+				<td>{{firstName}}</td>
+				<td>{{lastName}}</td>
+				<td>{{company}}</td>
+				<td>{{age}}</td>
+				<td>{{email}}</td>
+				<td>{{phone}}</td>
+			</tr>
+		{{/each}}
+	</tbody>
+</table>`;
+
+	component.exports = {
+		data: {
+			rows: data,
+			template
+		},
+
+		partials: {
+			template
+		},
+
+		onrender () {
+			this.target = this.find( '.target' );
+		},
+
+		handleScroll () {
+			this.event.original.preventDefault();
+			this.target.scrollTop -= this.event.original.wheelDelta;
+		},
+
+		changeOne () {
+			let row = this.get( 'rows' )[0];
+			let age = row.age;
+
+			while ( age === row.age ) {
+				age = 20 + ~~( Math.random() * 30 );
+			}
+
+			this.set( 'rows[0].age', age );
+		},
+
+		sortRows ( event ) {
+			let field = event.original.target.getAttribute( 'data-sort' );
+
+			console.time( 'update table' );
+
+			console.time( 'sort rows' );
+			let sortedRows = data.slice().sort( ( a, b ) => {
+				return typeof a[field] === 'number' ?
+					a[field] - b[field] :
+					a[field] < b[field] ? -1 : 1;
+			});
+			console.timeEnd( 'sort rows' );
+
+			// console.profile( 'sort rows' );
+			this.set( 'rows', sortedRows );
+			// console.profileEnd( 'sort rows' );
+
+			console.timeEnd( 'update table' );
+		}
+	};
+</script>

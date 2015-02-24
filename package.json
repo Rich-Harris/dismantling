@@ -16,10 +16,18 @@
     "gobble-derequire": "^0.1.0",
     "gobble-esperanto-bundle": "^0.1.7",
     "gobble-ractive": "git://github.com/gobblejs/gobble-ractive#edge",
-    "gobble-sass": "^0.4.0"
+    "gobble-sass": "^0.4.0",
+    "gobble-sorcery": "^0.2.4"
   },
   "dependencies": {
+    "codemirror": "^5.0.0",
+    "diff": "^1.2.2",
+    "handlebars": "^3.0.0",
     "moment": "^2.9.0",
-    "ractive": "git://github.com/ractivejs/ractive#build"
+    "mustache": "^1.1.0",
+    "ractive": "git://github.com/ractivejs/ractive#build",
+    "ractive-transitions-fade": "git://github.com/ractivejs/ractive-transitions-fade#edge",
+    "ractive-transitions-slide": "git://github.com/ractivejs/ractive-transitions-slide#edge",
+    "ractive-transitions-typewriter": "git://github.com/ractivejs/ractive-transitions-typewriter#edge"
   }
 }

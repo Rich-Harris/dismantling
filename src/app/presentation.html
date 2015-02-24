@@ -17,6 +17,48 @@
 		left: 50%;
 		transform: translate(-50%,-50%);
 	}
+
+	.w95 {
+		width: 95vw;
+	}
+
+	.large {
+		width: 95vw;
+		height: 95vh;
+	}
+
+	.large-list {
+		font-size: 3em;
+	}
+
+	.horizontal-split {
+		width: 100%;
+		height: 100%;
+	}
+
+	.split-left, .split-right {
+		position: absolute;
+		width: 50%;
+		height: 100%;
+	}
+
+	.split-left {
+		top: 0;
+		left: 0;
+	}
+
+	.split-right {
+		top: 0;
+		right: 0;
+	}
+
+	h1 {
+		font-size: 4em;
+	}
+
+	.front {
+		z-index: 999;
+	}
 </style>
 
 
@@ -24,7 +66,7 @@
 	component.exports = {
 		onrender () {
 			this.container = this.find( '.presentation' );
-			this.slides = this.findAllComponents( 'slide' );
+			this.slides = this.findAllComponents( 'Slide' );
 
 			let match = /#(\d+)/.exec( window.location.hash );
 			if ( match ) {
@@ -46,6 +88,10 @@
 			window.addEventListener( 'keydown', event => {
 				var i, slide;
 
+				if ( !event.metaKey && /TEXTAREA|INPUT/.test( event.target.tagName ) ) {
+					return;
+				}
+
 				if ( event.which < 37 || event.which > 40 ) {
 					return;
 				}
@@ -62,7 +108,10 @@
 							return;
 						}
 
-						this.goto( i + 1 );
+						if ( i < this.slides.length - 1 ) {
+							this.goto( i + 1, { smooth: true });
+						}
+
 						break;
 
 					case 37:
@@ -70,15 +119,18 @@
 							return;
 						}
 
-						this.goto( i - 1, true );
+						if ( i > 0 ) {
+							this.goto( i - 1, { smooth: true, back: true });
+						}
+
 						break;
 
 					case 40:
-						this.goto( i + 1 );
+						this.goto( i + 1, { smooth: true });
 						break;
 
 					case 38:
-						this.goto( i - 1, true );
+						this.goto( i - 1, { smooth: true, back: true });
 						break;
 				}
 			});

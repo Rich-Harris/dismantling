@@ -20,8 +20,10 @@ module.exports = gobble([
 		.transform( 'browserify', {
 			entries: [ './app' ],
 			dest: 'app.js',
-			standalone: 'App'
-		}),
+			standalone: 'App',
+			debug: true
+		})
+		.transform( 'sorcery' ),
 
 	gobble( 'src/styles' ).transform( 'sass', {
 		src: 'main.scss',

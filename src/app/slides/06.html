@@ -1,0 +1,72 @@
+<link rel='ractive' href='../Slide.html' name='Slide'>
+<link rel='ractive' href='../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../shared/codemirror.html' name='Codemirror'>
+
+<Slide>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<Codemirror mode='html' value='[[template]]' readonly>
+		</div>
+
+		<div class='split-right'>
+			<label>
+				<input type='checkbox' checked='{{keepFocus}}'>
+				keep focus
+			</label>
+
+			<label>
+				<input type='checkbox' checked='{{keepCursor}}'>
+				maintain cursor position
+			</label>
+
+			<div class='target' on-input='trash()'>
+				{{{rendered}}}
+			</div>
+		</div>
+	</div>
+</Slide>
+
+<style>
+
+</style>
+
+<script>
+	const Handlebars = require( 'handlebars' );
+
+	component.exports = {
+		data: {
+			template: `<input placeholder="What's your name?" value="{{name}}">
+<p>Hello, {{name}}!</p>`
+		},
+
+		onrender () {
+			let template = this.get( 'template' );
+			this.compiled = Handlebars.compile( template );
+
+			let rendered = this.compiled({});
+
+			this.set( 'rendered', rendered );
+		},
+
+		trash () {
+			let input = this.find( '.target input' );
+			let value = input.value;
+
+			let focused = this.get( 'keepFocus' ) && document.activeElement === input;
+			let cursor = this.get( 'keepCursor' ) && input.selectionStart;
+
+			this.set( 'rendered', this.compiled({ name: value }) );
+
+			input = this.find( '.target input' );
+
+			if ( focused ) {
+				input.focus();
+			}
+
+			if ( cursor ) {
+				input.selectionStart = input.selectionEnd = cursor;
+			}
+		}
+	};
+</script>

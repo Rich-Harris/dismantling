@@ -1,0 +1,12 @@
+http://blog.ractivejs.org/posts/whats-the-difference-between-react-and-ractive/#comment-1369754914
+https://twitter.com/AshKyd/status/561161713869795331
+https://twitter.com/robinvanholst/status/563653783897767936
+https://twitter.com/telemaco82/status/548928234352820224
+https://twitter.com/j_gds/status/544514102954299393
+https://twitter.com/danadams/status/542844378721845248
+https://twitter.com/bitprofusion/status/540722447629438976
+https://twitter.com/guilhermeaiolfi/status/540011891540910080
+https://twitter.com/kmandrup/status/533276665628352512
+https://twitter.com/findjashua/status/525845240117088257
+https://twitter.com/jorin_vogel/status/523587198957133824
+https://twitter.com/zot3p/status/563694933551239169

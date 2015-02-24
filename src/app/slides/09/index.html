@@ -1,0 +1,26 @@
+<link rel='ractive' href='../../Slide.html'>
+<link rel='ractive' href='../../speaker-notes.html'>
+
+<Slide>
+	<div class='centered'>
+		<h1>DOM-based alternative?</h1>
+
+		<Codemirror mode='htmlmixed' readonly value='{{example}}'/>
+
+		<ul class='large-list'>
+			<li>Limited expressiveness</li>
+			<li>Crazy server-side rendering hacks</li>
+			<li>Broken pages</li>
+		</ul>
+
+		<p>The <code>&lt;template&gt;</code> element helps, but...</p>
+	</div>
+</Slide>
+
+<script>
+	component.exports = {
+		data: {
+			example: `<img class='thumbnail' lol-repeat='photo in photos' lol-src='{{photo.src}}'>`
+		}
+	};
+</script>

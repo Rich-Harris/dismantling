@@ -1,3 +1,8 @@
+@import "mixins";
+@import "codemirror";
+@import "code";
+@import "fonts";
+
 html, body, main {
 	width: 100%;
 	min-height: 100%;
@@ -17,4 +22,13 @@ body * {
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: 200;
+	margin: 0 0 0.5em 0;
+}
+
+p {
+	margin: 0 0 1em 0;
+}
+
+.clearfix {
+	@include clearfix;
 }

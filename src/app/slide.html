@@ -1,10 +1,11 @@
 <section
 	class='slide'
-	style='background-color: {{bg}};
-	       color: {{fg}};
+	style='color: {{fg}};
 	       background-image: {{#if img}}url({{img}}){{else}}none{{/if}};'
 >
-	{{yield}}
+	<div class='inner' style='background-color: {{bg}}'>
+		{{yield}}
+	</div>
 </section>
 
 <style>
@@ -17,6 +18,14 @@
 		background: #f9f9f9 no-repeat 50% 50%;
 		background-size: cover;
 		overflow: hidden;
+	}
+
+	.inner {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
 
 		-webkit-transition: all 0.4s;
 		-moz-transition: all 0.4s;

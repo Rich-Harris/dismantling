@@ -1,0 +1,114 @@
+<link rel='ractive' href='../Slide.html'>
+<link rel='ractive' href='../speaker-notes.html'>
+
+<link rel='ractive' href='../shared/codemirror.html'>
+
+<Slide steps='3' currentStep='{{step}}'>
+	<div class='centered w95'>
+		<div class='upper-half'>
+			<codemirror
+				value='{{template}}'
+				mode='html'
+				label='template'
+				targetValue='{{step === 1 ? templates[0] : templates[1]}}'
+			></codemirror>
+		</div>
+
+		<div class='lower-half clearfix' style='transform: translateX({{step === 1 ? 0 : -50}}%)'>
+			<div class='left'>
+				<codemirror value='{{data_code}}' targetValue='"{name: \"world\"}"' mode='javascript' label='data' wrap='true'></codemirror>
+				<codemirror value='{{rendered}}' readonly mode='htmlmixed' label='rendered html' wrap='true'></codemirror>
+
+				<div class='output'>
+					{{{rendered}}}
+				</div>
+			</div>
+
+			<div class='right'>
+				<codemirror value='{{compiled}}' readonly mode='javascript' label='compiled' wrap='true'></codemirror>
+			</div>
+		</div>
+	</div>
+
+	<speaker-notes>
+
+	</speaker-notes>
+</Slide>
+
+<style>
+	.centered {
+		overflow-x: hidden;
+	}
+
+	.lower-half {
+		width: 200%;
+		transition: transform 0.2s ease-out;
+	}
+
+	.left, .right {
+		width: 50%;
+		float: left;
+	}
+
+	.output {
+		height: 100px;
+	}
+</style>
+
+<script>
+	const Handlebars = require( 'handlebars' );
+
+	window.Handlebars = Handlebars;
+
+	function compile ( template ) {
+		let compiled = Handlebars.precompile( template );
+		let fn = eval( `(${compiled})` ).main;
+		return fn.toString();
+	}
+
+	component.exports = {
+		data: {
+			step: 1,
+
+			template: '<h1></h1>',
+			templates: [
+				'<h1>Hello {{name}}!</h1>',
+				'<h1>Hello {{name}}!</h1><p>It\'s nice to meet you, {{name}}.</p>'
+			],
+			compiled: compile( '' ),
+			data_code: '{name: ""}',
+			data: {}
+		},
+
+		oninit () {
+			this.observe({
+				'data_code': code => {
+					try {
+						let data = eval( `(${code})` );
+						this.set( 'data', data );
+					} catch ( e ) {
+						//console.error( e );
+					}
+				},
+				'template data': () => {
+					let template = this.get( 'template' );
+					let data = this.get( 'data' );
+
+					try {
+						let compiled = compile( template );
+						let rendered = Handlebars.compile( template )( data );
+
+						this.set({ compiled, rendered });
+					} catch ( e ) {
+						//console.error( e );
+					}
+				}
+			});
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' ),
+			slide: require( 'ractive-transitions-slide' )
+		}
+	};
+</script>

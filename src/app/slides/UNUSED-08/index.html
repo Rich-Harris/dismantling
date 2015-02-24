@@ -1,0 +1,214 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../../shared/codemirror.html' name='Codemirror'>
+
+<Slide>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<Codemirror mode='html' value='[[template]]' readonly>
+		</div>
+
+		<div class='split-right'>
+			<div class='target centered' on-mousemove='updateCrosshairs(event)'></div>
+		</div>
+	</div>
+</Slide>
+
+<style>
+	.target {
+		position: absolute;
+		width: 100%;
+		height: 70vh;
+		padding: 0 0 25vh 0;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	rect {
+		fill: #eee;
+	}
+
+	.axis {
+		stroke: #333;
+	}
+
+	.crosshair {
+		stroke: #999;
+	}
+
+	circle {
+		stroke: #333;
+		opacity: 0.2;
+	}
+
+	.highlighted {
+		stroke-width: 3;
+		opacity: 1;
+	}
+
+	.continent-1 {
+		fill: red;
+	}
+
+	.continent-2 {
+		fill: yellow;
+	}
+
+	.continent-3 {
+		fill: blue;
+	}
+
+	.continent-4 {
+		fill: green;
+	}
+
+	.continent-5 {
+		fill: orange;
+	}
+
+	.continent-6 {
+		fill: purple;
+	}
+</style>
+
+<script>
+	const Handlebars = require( 'handlebars' );
+	const data = require( '../../shared/wb-data' );
+
+	const linearScale = require( '../../shared/linearScale' );
+
+	component.exports = {
+		data: {
+			template: `<svg>
+	<!-- axes -->
+	<line class='axis' x1='{{xMin}}' x2='{{xMax}}' y1='{{yMin}}' y2='{{yMin}}'/>
+	<line class='axis' x1='{{xMin}}' x2='{{xMin}}' y1='{{yMin}}' y2='{{yMax}}'/>
+
+	<!-- crosshair -->
+	<line class='crosshair' x1='{{xMin}}' x2='{{xMax}}' y1='{{y}}' y2='{{y}}'/>
+	<line class='crosshair' x1='{{x}}' x2='{{x}}' y1='{{yMin}}' y2='{{yMax}}'/>
+
+	<!-- data points -->
+	<g>
+		{{#each circles}}
+			<circle class='continent-{{continent}} {{highlightClass}}' cx='{{x}}' cy='{{y}}' r='{{radius}}'/>
+		{{/each}}
+	</g>
+</svg>
+
+{{#with country}}
+	<div>
+		{{name}}
+	</div>
+{{/with}}`
+		},
+
+		onrender () {
+			this.target = this.find( '.target' );
+
+			let template = this.get( 'template' );
+			this.compiled = Handlebars.compile( template );
+
+			this.handleResize();
+			this.refresh();
+
+			this.handleResize();
+			this.refresh();
+		},
+
+		handleResize () {
+			let svg = this.target.querySelector( 'svg' );
+
+			if ( svg ) {
+				let bcr = svg.getBoundingClientRect();
+				this._width = bcr.right - bcr.left;
+				this._height = bcr.bottom - bcr.top;
+			} else {
+				this._width = 100;
+				this._height = 100;
+			}
+
+		},
+
+		refresh () {
+			let xMin = 20;
+			let xMax = this._width;
+			let yMin = this._height - 20;
+			let yMax = 0;
+
+			this._xScale = linearScale([ Math.log10( 100 ), Math.log10( 100000 ) ], [ xMin, xMax ]);
+			this._inverseXScale = this._xScale.inverse();
+
+			this._yScale = linearScale([ 40, 80 ], [ yMin, yMax ]);
+			this._inverseYScale = this._yScale.inverse();
+
+			this.circles = data.map( country => {
+				return {
+					x: this._xScale( Math.log10( country.gdp_per_capita ) ),
+					y: this._yScale( country.life_expectancy ),
+					radius: 0.0005 * Math.sqrt( country.population ),
+					continent: country.continent,
+					highlightClass: country === this._nearestCountry ? 'highlighted' : '',
+
+					country
+				};
+			});
+
+			this.target.innerHTML = this.compiled({
+				xMin, xMax, yMin, yMax,
+				x: this._x ? Math.max( xMin, Math.min( xMax, this._x ) ) : -9999,
+				y: this._y ? Math.max( yMax, Math.min( yMin, this._y ) ) : -9999,
+				circles: this.circles,
+
+				country: this._nearestCountry
+			});
+		},
+
+		updateCrosshairs ( event ) {
+			let svg = this.target.querySelector( 'svg' );
+
+			if ( !svg ) {
+				return;
+			}
+
+			let ctm = svg.getScreenCTM();
+			let x = event.original.clientX;
+			let y = event.original.clientY;
+
+			let svgX = x - ctm.e;
+			let svgY = y - ctm.f;
+
+			this._x = svgX;
+			this._y = svgY;
+
+			this._nearestCountry = this.circles.sort( ( a, b ) => {
+				let _a = {
+					dx: a.x - svgX,
+					dy: a.y - svgY
+				};
+
+				let _b = {
+					dx: b.x - svgX,
+					dy: b.y - svgY
+				};
+
+				_a.d = ( _a.dx * _a.dx ) + ( _a.dy * _a.dy );
+				_b.d = ( _b.dx * _b.dx ) + ( _b.dy * _b.dy );
+
+				return _a.d - _b.d;
+			})[0].country;
+
+			this.refresh();
+
+			// let gdp = Math.pow( 10, this._inverseXScale( svgX ) );
+			// let life_expectancy = this._inverseYScale( svgY );
+
+			// console.log( 'gdp', gdp );
+			// console.log( 'life_expectancy', life_expectancy );
+		}
+	};
+</script>
