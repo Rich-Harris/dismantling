@@ -6,13 +6,17 @@
 <Slide>
 	<div class='horizontal-split'>
 		<div class='split-left'>
-			<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			<div class='padded'>
+				<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			</div>
 		</div>
 
 		<div class='split-right'>
-			<button on-click='changeOne()'>change one piece of data</button>
-			<div class='target' on-mousewheel='handleScroll()' on-click='sortRows(event)'>
-				{{>template}}
+			<div class='padded'>
+				<button on-click='changeOne()'>change one piece of data</button>
+				<div class='target {{#if updating}}updating{{/if}}' on-mousewheel='handleScroll()' on-click='sortRows(event)'>
+					{{>template}}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -24,6 +28,10 @@
 		width: 100%;
 		height: 100%;
 		overflow-y: scroll;
+	}
+
+	.updating {
+		background-color: rgba(255,0,0,0.1);
 	}
 </style>
 
@@ -83,7 +91,15 @@
 				age = 20 + ~~( Math.random() * 30 );
 			}
 
-			this.set( 'rows[0].age', age );
+			this.set( 'updating', true );
+
+			setTimeout( () => {
+				console.time( 'updating age' );
+				this.set( 'rows[0].age', age );
+				console.timeEnd( 'updating age' );
+				this.set( 'updating', false );
+			}, 0 );
+
 		},
 
 		sortRows ( event ) {
@@ -91,19 +107,24 @@
 
 			console.time( 'update table' );
 
-			console.time( 'sort rows' );
-			let sortedRows = data.slice().sort( ( a, b ) => {
-				return typeof a[field] === 'number' ?
-					a[field] - b[field] :
-					a[field] < b[field] ? -1 : 1;
+			this.set( 'updating', true );
+
+			setTimeout( () => {
+				let sortedRows = data.slice().sort( ( a, b ) => {
+					return typeof a[field] === 'number' ?
+						a[field] - b[field] :
+						a[field] < b[field] ? -1 : 1;
+				});
+
+				this.set({
+					rows: sortedRows,
+					updating: false
+				});
+
+				console.timeEnd( 'update table' );
 			});
-			console.timeEnd( 'sort rows' );
 
-			// console.profile( 'sort rows' );
-			this.set( 'rows', sortedRows );
-			// console.profileEnd( 'sort rows' );
 
-			console.timeEnd( 'update table' );
 		}
 	};
 </script>

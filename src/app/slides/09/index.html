@@ -7,20 +7,30 @@
 
 		<Codemirror mode='htmlmixed' readonly value='{{example}}'/>
 
-		<ul class='large-list'>
+		<ul>
 			<li>Limited expressiveness</li>
 			<li>Crazy server-side rendering hacks</li>
 			<li>Broken pages</li>
 		</ul>
 
 		<p>The <code>&lt;template&gt;</code> element helps, but...</p>
+
+		<Codemirror mode='javascript' readonly value='{{importNode}}'/>
 	</div>
 </Slide>
+
+<style>
+	ul {
+		font-size: 2em;
+	}
+</style>
 
 <script>
 	component.exports = {
 		data: {
-			example: `<img class='thumbnail' lol-repeat='photo in photos' lol-src='{{photo.src}}'>`
+			example: `<img class='thumbnail' lol-repeat='photo in photos' lol-src='{{photo.src}}'>`,
+			importNode: `node = document.importNode(document.querySelector('template').content,true);
+document.appendChild(node);`
 		}
 	};
 </script>

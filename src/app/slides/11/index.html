@@ -6,22 +6,26 @@
 <Slide>
 	<div class='horizontal-split'>
 		<div class='split-left'>
-			<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			<div class='padded'>
+				<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			</div>
 		</div>
 
 		<div class='split-right'>
-			<label>
-				<input disabled type='checkbox' checked='{{keepFocus}}'>
-				keep focus
-			</label>
+			<div class='padded'>
+				<label>
+					<input disabled type='checkbox' checked='{{keepFocus}}'>
+					keep focus
+				</label>
 
-			<label>
-				<input disabled type='checkbox' checked='{{keepCursor}}'>
-				maintain cursor position
-			</label>
+				<label>
+					<input disabled type='checkbox' checked='{{keepCursor}}'>
+					maintain cursor position
+				</label>
 
-			<div class='target'>
-				{{>template}}
+				<div class='target'>
+					{{>template}}
+				</div>
 			</div>
 		</div>
 	</div>

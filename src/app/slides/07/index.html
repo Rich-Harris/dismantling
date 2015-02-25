@@ -6,12 +6,16 @@
 <Slide steps='2' currentStep='{{step}}'>
 	<div class='horizontal-split'>
 		<div class='split-left'>
-			<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			<div class='padded'>
+				<Codemirror mode='htmlmixed' value='[[template]]' readonly>
+			</div>
 		</div>
 
 		<div class='split-right'>
-			<button on-click='changeOne()'>change one piece of data</button>
-			<div class='target' on-mousewheel='handleScroll()' on-click='sortRows(event)'></div>
+			<div class='padded'>
+				<button on-click='changeOne()'>change one piece of data</button>
+				<div class='target {{#if updating}}updating{{/if}}' on-mousewheel='handleScroll()' on-click='sortRows(event)'></div>
+			</div>
 		</div>
 	</div>
 
@@ -29,10 +33,15 @@
 		height: 100%;
 		overflow-y: scroll;
 	}
+
+	.updating {
+		background-color: rgba(255,0,0,0.1);
+	}
 </style>
 
 <script>
 	const Handlebars = require( 'handlebars' );
+	const rAF = require( 'utils/compatibility/requestAnimationFrame' );
 	const data = require( '../../shared/table-data' );
 
 	component.exports = {
@@ -106,10 +115,17 @@
 
 		refresh () {
 			console.time( 'refresh' );
-			this.target.innerHTML = this.compiled({
-				rows: this.rows
-			});
-			console.timeEnd( 'refresh' );
+
+			this.set( 'updating', true );
+
+			setTimeout( () => {
+				this.target.innerHTML = this.compiled({
+					rows: this.rows
+				});
+
+				this.set( 'updating', false );
+				console.timeEnd( 'refresh' );
+			}, 0 );
 		},
 
 		transitions: {

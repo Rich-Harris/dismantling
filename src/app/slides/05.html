@@ -10,13 +10,13 @@
 				value='{{template}}'
 				mode='htmlmixed'
 				label='template'
-				targetValue='{{step === 1 ? templates[0] : templates[1]}}'
+				targetValueSequence='{{templates}}'
 			></codemirror>
 		</div>
 
 		<div class='lower-half clearfix' style='transform: translateX({{step === 1 ? 0 : -50}}%)'>
 			<div class='left'>
-				<codemirror value='{{data_code}}' targetValue='"{name: \"world\"}"' mode='javascript' label='data' wrap='true'></codemirror>
+				<codemirror value='{{data_code}}' targetValueSequence='["{name: \"world\"}"]' mode='javascript' label='data' wrap='true'></codemirror>
 				<codemirror value='{{rendered}}' readonly mode='htmlmixed' label='rendered html' wrap='true'></codemirror>
 
 				<div class='output'>
