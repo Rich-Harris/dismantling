@@ -88,6 +88,7 @@ pre code {
 }
 
 .cm-s-ractive {
+	max-height: 100%;
 	line-height: 1.5 !important;
 	div.CodeMirror-selected { background: #b36539 !important; }
 	.CodeMirror-gutters     { background: #fcfcfc; border-right: 1px solid #eee; }
@@ -129,7 +130,7 @@ pre code {
 	}
 
 	.CodeMirror-scroll {
-		height: auto;
-		overflow: auto;
+		// height: auto;
+		// overflow: auto;
 	}
 }

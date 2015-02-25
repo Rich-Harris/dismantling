@@ -1,0 +1,148 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<link rel='ractive' href='../../shared/codemirror.html' name='Codemirror'>
+
+<Slide steps='1' currentStep='{{step}}'>
+	<div class='max' on-mousemove='forward(event)'>
+		<div class='horizontal-split'>
+			<div class='split-left'>
+				<Codemirror mode='javascript' targetValueSequence='{{jsTemplates}}' label='code'>
+			</div>
+
+			<div class='split-right'>
+				<Codemirror mode='htmlmixed' targetValueSequence='{{htmlTemplates}}' label='template'>
+			</div>
+		</div>
+
+		<div class='target'></div>
+	</div>
+</Slide>
+
+<style>
+	.max {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.target {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		pointer-events: none;
+	}
+
+	.target > div {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		opacity: 0.9;
+	}
+
+	.target svg {
+		position: absolute;
+		width: 400px;
+		height: 200px;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%,-50%);
+		z-index: 9999;
+		overflow: visible;
+	}
+
+	.eye {
+		fill: white;
+		stroke: black;
+	}
+
+	.pupil {
+		fill: black;
+	}
+
+	.eyebrow {
+		stroke: black;
+		stroke-width: 10;
+		fill: none;
+	}
+</style>
+
+<script>
+	const s = require( 'simulant' );
+	const run = require( '../../shared/run' );
+	const htmlTemplates = require( './htmlTemplates' );
+	const jsTemplates = require( './jsTemplates' );
+
+	component.exports = {
+		data: {
+			step: 1,
+			htmlTemplates,
+			jsTemplates
+		},
+
+		onrender () {
+			let editors = this.findAllComponents( 'Codemirror' );
+
+			this.htmlEditor = editors.filter( e => e.get( 'mode' ) === 'htmlmixed' )[0];
+			this.jsEditor = editors.filter( e => e.get( 'mode' ) === 'javascript' )[0];
+
+			let execute = () => {
+				run( this.jsEditor.get( 'value' ), {
+					demo: this.find( '.target' ),
+					template: this.htmlEditor.get( 'value' ),
+					Ractive,
+				});
+
+				let target = this.find( '.target' );
+				if ( target ) {
+					this.targetInner = target.querySelector( 'div' );
+
+					if ( this.targetInner ) {
+						s.fire( this.targetInner, 'mousemove', {
+							clientX: this._lastX,
+							clientY: this._lastY
+						});
+					}
+				}
+			};
+
+			let handleKeydown = event => {
+				if ( event.metaKey && event.which === 13 ) {
+					execute();
+				}
+			};
+
+			this.htmlEditor.observe( 'value', template => {
+				try {
+					Ractive.parse( template );
+					execute();
+				} catch ( err ) {}
+			});
+
+			editors.forEach( editor => {
+				editor.on( 'keydown', handleKeydown );
+			});
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		},
+
+		forward ( event ) {
+			this._lastX = event.original.clientX;
+			this._lastY = event.original.clientY;
+
+			if ( !this.targetInner || this._forwarding ) return;
+			this._forwarding = true;
+
+			s.fire( this.targetInner, 'mousemove', {
+				clientX: this._lastX,
+				clientY: this._lastY
+			});
+
+			this._forwarding = false;
+		}
+	};
+</script>

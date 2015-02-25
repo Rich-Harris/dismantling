@@ -1,0 +1,49 @@
+<link rel='ractive' href='../../Slide.html' name='Slide'>
+<link rel='ractive' href='../../speaker-notes.html' name='SpeakerNotes'>
+
+<Slide steps='2' currentStep='{{step}}'>
+	<div class='padded'>
+		<Codemirror value='{{example}}' readonly mode='htmlmixed'/>
+
+		<div class='split-right'>
+			{{#if step === 1}}
+				<img
+					intro-outro='fade'
+					class='front centered'
+					src='images/oscars-screenshot.png'
+					style='max-height: 90%;'
+				>
+			{{/if}}
+
+			{{#if step === 2}}
+				<img
+					intro-outro='fade'
+					class='front centered'
+					src='images/oscars-results.png'
+					style='max-width: 90%;'
+				>
+			{{/if}}
+		</div>
+	<div>
+</Slide>
+
+<style>
+	img {
+		box-shadow: 7px 7px 10px rgba(0,0,0,0.3);
+	}
+</style>
+
+<script>
+	const example = require( './example' );
+
+	component.exports = {
+		data: {
+			step: 1,
+			example
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>

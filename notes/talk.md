@@ -309,6 +309,8 @@ var clock = new Clock({
 });
 ```
 
+---
+
 And now, if we *register* that component, we can use it inside other templates:
 
 ```js
@@ -338,7 +340,7 @@ var interval = setInterval( () => {
 <Clock datetime='{{datetime}}'/>
 ```
 
-This is very similar to the web components idea, except look ma, no polyfills! And it turns out that this way of building apps - creating a tree of components that describe how we want our app to look at any given time, and just repeatedly throwing data at it - really, really works.
+This is very similar to the web components idea, except look ma, no polyfills! (And we're not blindly shoving stuff into the global namespace, and data doesn't get coerced to a string as it flows through the system.) And it turns out that this way of building apps - creating a tree of components that describe how we want our app to look at any given time, and just repeatedly throwing data at it - really, really works.
 
 ---
 
@@ -352,7 +354,7 @@ The template, styles and behaviours - sometimes even the data - that belong to a
 
 It's a heretical way of working, but one that makes us incredibly productive compared to how we used to do things. The relationship between our HTML, CSS and JavaScript is clear and precise, and that becomes so important when you have to work on code that you didn't write - all of us on the team have at some point had the experience of having to fix someone else's bug, and a component-driven architecture is the thing that has always saved us, because it's so easy to figure out where the problem is.
 
-But while it might be heretical, it's also very familiar. Think back to the first time you started learning how to build stuff for the web - chances are, you had an HTML file, with a `<style>` tag at the top and a `<script>` tag at the bottom. And you were probably really happy with that, until people started haranguing you about the 'correct' way to do things, which usually means 'the way that I prefer'.
+But while it might be heretical, it's also very familiar. Think back to the first time you started learning how to build stuff for the web - chances are, you had an HTML file, with a `<style>` tag at the top and a `<script>` tag at the bottom. And you were probably really happy with that, until people started haranguing you about 'best practices'.
 
 ---
 

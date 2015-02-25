@@ -1,0 +1,61 @@
+<link rel='ractive' href='../../Slide.html'>
+<link rel='ractive' href='../../speaker-notes.html'>
+
+<Slide>
+	<div class='horizontal-split'>
+		<div class='split-left'>
+			<div class='pad-top'>
+				<h2>bad</h2>
+
+				<div class='vertical-split'>
+					<div class='split-top'>
+						<Codemirror mode='htmlmixed' readonly value='[[badHtml]]'/>
+					</div>
+
+					<div class='split-bottom'>
+						<Codemirror mode='javascript' readonly value='[[badJs]]'/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class='split-right'>
+			<div class='pad-top'>
+				<h2>good</h2>
+
+				<div class='vertical-split'>
+					<div class='split-top'>
+						<Codemirror mode='htmlmixed' readonly value='[[goodHtml]]'/>
+					</div>
+
+					<div class='split-bottom'>
+						<Codemirror mode='javascript' readonly value='[[goodJs]]'/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</Slide>
+
+<script>
+	component.exports = {
+		data: {
+			badHtml: `<div onmousemove='redraw(event)'>
+	<!-- content goes here -->
+</div>`,
+			badJs: `function redraw () {
+	// code goes here
+}`,
+			goodHtml: `<div class='target'>
+	<!-- content goes here -->
+</div>`,
+			goodJs: `(function () {
+	function redraw () {
+		// code goes here
+	}
+
+	document.querySelector( '.target' ).addEventListener( 'mousemove', redraw );
+})();`
+		}
+	};
+</script>

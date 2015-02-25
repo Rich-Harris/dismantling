@@ -75,6 +75,12 @@
 	.front {
 		z-index: 999;
 	}
+
+	.padded {
+		width: 100%;
+		height: 100%;
+		padding: 1em;
+	}
 </style>
 
 
@@ -88,17 +94,11 @@
 			if ( match ) {
 				// TODO would be better if onrender happened after rendering was complete.
 				// order should stay the same, obvs
-				setTimeout( () => this.goto( +match[1] ) );
+				setTimeout( () => this.goto( +match[1] - 1 ) );
 			}
 
 			this.observe({
-				scrollTop: st => this.container.scrollTop = st,
-				currentSlide: ( slide, previousSlide ) => {
-					if ( slide !== undefined ) {
-						window.location.hash = slide;
-						this.goto( slide, slide < previousSlide );
-					}
-				}
+				scrollTop: st => this.container.scrollTop = st
 			});
 
 			window.addEventListener( 'keydown', event => {
@@ -151,6 +151,11 @@
 				}
 			});
 
+			window.addEventListener( 'resize', () => {
+				// stick to current slide
+				this.goto( this.get( 'currentSlide' ) );
+			});
+
 			this.scrollTimeout = null;
 			this._updateCurrentSlide = () => this.updateCurrentSlide();
 		},
@@ -161,10 +166,20 @@
 		},
 
 		updateCurrentSlide () {
+			let previousSlide = this.get( 'currentSlide' );
+
 			var i = this.slides.length;
 			while ( i-- ) {
 				if ( this.slides[i].isCurrent() ) {
 					this.set( 'currentSlide', i );
+					window.location.hash = i + 1;
+
+					this.goto( i, {
+						smooth: true,
+						back: i < previousSlide,
+						activate: i !== previousSlide
+					});
+
 					return i;
 				}
 			}
@@ -195,13 +210,15 @@
 				promise = this.set( 'scrollTop', targetScrollTop );
 			}
 
-			promise.then( () => {
-				if ( options.back ) {
-					slide.gotoLastStep();
-				} else {
-					slide.gotoFirstStep();
-				}
-			});
+			if ( options.activate ) {
+				promise.then( () => {
+					if ( options.back ) {
+						slide.gotoLastStep();
+					} else {
+						slide.gotoFirstStep();
+					}
+				});
+			}
 		}
 	};
 </script>

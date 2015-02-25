@@ -1,14 +1,39 @@
-{{#if label}}
-	<p class='label'>{{label}}</p>
-{{/if}}
+<div
+	class='codemirror-container {{#if label}}has-label{{/if}}'
+	style='{{#height}}height: {{height}};{{/height}}'
+	on-mouseenter='set({canScrollDocument:false,preventInitialScroll:true})'
+	on-mousewheel='maybeScroll(event)'
+>
+	{{#if label}}
+		<p class='label'>{{label}}</p>
+	{{/if}}
 
-<div class='codemirror-container' style='{{#height}}height: {{height}};{{/height}}'>
-	<textarea></textarea>
+	<div class='codemirror-container-inner'>
+		<textarea></textarea>
+	</div>
 </div>
 
 <style>
 	.codemirror-container {
-		margin: 0 0 1em 0;
+		height: 100%;
+		padding: 0 0 1em 0;
+	}
+
+	.has-label {
+		padding: 2em 0 1em 0;
+	}
+
+	.label {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 2em;
+		margin: 0;
+	}
+
+	.codemirror-container-inner {
+		width: 100%;
+		height: 100%;
 	}
 </style>
 
@@ -24,6 +49,10 @@
 	require( 'codemirror/keymap/sublime' );
 
 	component.exports = {
+		data: {
+			wrap: true
+		},
+
 		onrender: function () {
 			var component = this, mode, editor, doc, updating, targetValueSequence, targetValueSequenceIndex;
 
@@ -36,7 +65,7 @@
 				};
 			}
 
-			editor = CodeMirror.fromTextArea( this.find( 'textarea' ), {
+			editor = this._editor = CodeMirror.fromTextArea( this.find( 'textarea' ), {
 				mode: mode,
 				theme: this.get( 'theme' ) || 'ractive',
 				lineWrapping: this.get( 'wrap' ),
@@ -65,6 +94,12 @@
 
 				if ( !event.metaKey && ( event.which >= 37 && event.which <= 40 ) ) {
 					event.stopPropagation();
+					return;
+				}
+
+				// don't respond to Cmd-Enter
+				if ( event.metaKey && event.which === 13 ) {
+					event.preventDefault();
 					return;
 				}
 
@@ -163,6 +198,23 @@
 			this.on( 'teardown', function () {
 				editor.toTextArea();
 			});
+		},
+
+		maybeScroll ( event ) {
+			/*if ( !this.get( 'canScrollDocument' ) ) {
+				event.original.preventDefault();
+			}
+
+			clearTimeout( this._scrollTimeout );
+			this._scrollTimeout = setTimeout( () => {
+				let { top, height, clientHeight } = this._editor.getScrollInfo();
+				let maxTop = Math.max( 0, height - clientHeight );
+
+				// if we're at the limits, allow scrolling
+				if ( top <= 0 || top >= maxTop ) {
+					this.set( 'canScrollDocument', true );
+				}
+			}, 250 );*/
 		},
 
 		isolated: true

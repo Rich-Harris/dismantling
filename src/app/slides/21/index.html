@@ -1,0 +1,84 @@
+<link rel='ractive' href='../../Slide.html'>
+<link rel='ractive' href='../../speaker-notes.html'>
+
+<Slide steps='3' currentStep='{{step}}'>
+	{{#if step <= 3}}
+		<div class='split-top'>
+			<div class='split-left'>
+				<pre class='centered'><code>
+ractive = new Ractive({
+	el: 'body',
+	template: '<span class='template' on-keydown='maybeCancel(event.original)' contenteditable='true' value='{{template}}'></span>',
+	data: { a: {{a}}, b: {{b}} }
+})</code></pre>
+			</div>
+
+			<div class='split-right'>
+				<code class='centered'>{{JSON.stringify(parsed)}}</code>
+			</div>
+		</div>
+	{{/if}}
+
+	{{#if step >= 2 && step <= 3}}
+		<div class='split-bottom'>
+			<div class='split-left'>
+				<div class='viewmodel centered'>
+					<h2>viewmodel</h2>
+
+					<p>a: {{a}}</p>
+					<p>b: {{b}}</p>
+
+					{{#if step === 3}}
+						<p>${a+b}: [computed]</p>
+					{{/if}}
+				</div>
+			</div>
+
+			<div class='split-right'>
+				<div class='virtualdom centered'>
+					<h2>virtual DOM</h2>
+
+					<p>&#123;&#123;a}} depends on 'a'</p>
+					<p>&#123;&#123;b}} depends on 'b'</p>
+
+					{{#if step === 3}}
+						<p>&#123;&#123;a+b}} depends on '${a+b}'</p>
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	{{/if}}
+</Slide>
+
+<style>
+
+</style>
+
+<script>
+	component.exports = {
+		data: {
+			step: 1,
+			template: '{{a}} + {{b}} = {{a+b}}',
+
+			a: 1,
+			b: 2
+		},
+
+		oninit () {
+			this.observe({
+				template: t => {
+					try {
+						let parsed = Ractive.parse( t );
+						this.set( 'parsed', parsed );
+					} catch ( err ) {}
+				}
+			});
+		},
+
+		maybeCancel ( e ) {
+			if ( !e.metaKey && e.which >= 37 && e.which <= 40 ) {
+				event.stopPropagation();
+			}
+		}
+	};
+</script>

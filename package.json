@@ -30,6 +30,7 @@
     "ractive": "git://github.com/ractivejs/ractive#build",
     "ractive-transitions-fade": "git://github.com/ractivejs/ractive-transitions-fade#edge",
     "ractive-transitions-slide": "git://github.com/ractivejs/ractive-transitions-slide#edge",
-    "ractive-transitions-typewriter": "git://github.com/ractivejs/ractive-transitions-typewriter#edge"
+    "ractive-transitions-typewriter": "git://github.com/ractivejs/ractive-transitions-typewriter#edge",
+    "simulant": "^0.1.3"
   }
 }
