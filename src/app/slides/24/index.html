@@ -1,0 +1,101 @@
+<link rel='ractive' href='../../Slide.html'>
+<link rel='ractive' href='../../speaker-notes.html'>
+
+<Slide steps='2' currentStep='{{step}}'>
+	<div class='image-outer'>
+		<div class='image' style='background-image: url(images/learn-to-code.png); opacity: {{step === 1 ? 1 : 0.05}}'></div>
+	</div>
+
+	{{#if step > 1}}
+		<p class='centered'>
+			{{#each thingsToLearn :i}}
+				<span intro='spring:{delay:{{i*100}}}'>{{this}}</span>
+			{{/each}}
+		</p>
+	{{/if}}
+</Slide>
+
+<style>
+	.image-outer {
+		width: 100%;
+		height: 100%;
+		padding: 1em;
+	}
+
+	.image {
+		width: 100%;
+		height: 100%;
+		background: no-repeat 50% 50%;
+		background-size: contain;
+		transition: opacity 0.4s;
+	}
+
+	p {
+		text-align: center;
+	}
+
+	span {
+		font-size: 1.6em;
+		padding: 0 0.5em;
+		display: inline-block;
+	}
+
+	span::after {
+		content '-'
+	}
+
+	span:last-child::after {
+		content: '';
+	}
+</style>
+
+<script>
+	const thingsToLearn = [
+		'npm',
+		'Grunt',
+		'Gulp',
+		'Bootstrap',
+		'GitHub',
+		'The command line',
+		'Devtools',
+		'Sublime',
+		'HTML validation',
+		'meta charset',
+		'DNS',
+		'image compression',
+		'SEO',
+		'Sitemaps',
+		'RSS',
+		'robots.txt',
+		'SASS',
+		'LESS',
+		'AMD',
+		'CommonJS',
+		'ES6 modules',
+		'Transpilers',
+		'Minifiers',
+		'jQuery',
+		'Backbone',
+		'Angular',
+		'Linting',
+		'Tests',
+		'Cross-browser testing',
+		'a11y',
+		'i18n',
+		'Analytics',
+		'Canvas and WebGL',
+		'SVG'
+	];
+
+	component.exports = {
+		data: {
+			step: 1,
+			thingsToLearn
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' ),
+			spring: require( '../../shared/spring' )
+		}
+	};
+</script>

@@ -1,67 +1,151 @@
 <link rel='ractive' href='../../Slide.html'>
 <link rel='ractive' href='../../speaker-notes.html'>
 
-<Slide steps='3' currentStep='{{step}}'>
-	{{#if step <= 3}}
-		<div class='split-top'>
+<link rel='ractive' href='./timeline.html'>
+<link rel='ractive' href='./widget.html'>
+
+<Slide steps='5' currentStep='{{step}}'>
+	<div class='container' style='transform: translate(0,{{offsets[step]}}vh);'>
+		<div style='height: 50vh;'>
 			<div class='split-left'>
 				<pre class='centered'><code>
 ractive = new Ractive({
 	el: 'body',
 	template: '<span class='template' on-keydown='maybeCancel(event.original)' contenteditable='true' value='{{template}}'></span>',
-	data: { a: {{a}}, b: {{b}} }
-})</code></pre>
+	data: { a: 1, b: 2 }
+});</code></pre>
 			</div>
 
 			<div class='split-right'>
 				<code class='centered'>{{JSON.stringify(parsed)}}</code>
 			</div>
 		</div>
-	{{/if}}
 
-	{{#if step >= 2 && step <= 3}}
-		<div class='split-bottom'>
+		<div style='height: 40vh;'>
+			{{#if step >= 2}}
+				<div class='split-left'>
+					<div class='viewmodel'>
+						<h2>viewmodel</h2>
+
+						<p>'a': {{Math.round(a)}}</p>
+						<p>'b': {{Math.round(b)}}</p>
+
+						{{#if step >= 3}}
+							<p intro-outro='slide'>'${a+b}': {{Math.round(a+b)}} [computed]</p>
+						{{/if}}
+					</div>
+				</div>
+
+				<div class='split-right'>
+					<div class='virtualdom'>
+						<h2>virtual DOM</h2>
+
+						<p>&#123;&#123;a}} depends on 'a'</p>
+						<p>&#123;&#123;b}} depends on 'b'</p>
+
+						{{#if step >= 3}}
+							<p intro-outro='slide'>&#123;&#123;a+b}} depends on '${a+b}'</p>
+						{{/if}}
+					</div>
+				</div>
+			{{/if}}
+		</div>
+
+		<div style='height: 20vh'>
+			<pre class='centered'><code>
+ractive.set({ a: 40, b: 2 });</code></pre>
+		</div>
+
+		<div style='height: 20vh'>
+			<div class='batch'>
+				batch of operations
+			</div>
+		</div>
+
+		<div style='height: 20vh'>
+			{{#if step >= 4}}
+				<timeline/>
+			{{/if}}
+		</div>
+
+		<div style='height: 80vh'>
 			<div class='split-left'>
-				<div class='viewmodel centered'>
-					<h2>viewmodel</h2>
-
-					<p>a: {{a}}</p>
-					<p>b: {{b}}</p>
-
-					{{#if step === 3}}
-						<p>${a+b}: [computed]</p>
-					{{/if}}
+				<div class='padded'>
+					<Codemirror mode='javascript' value='{{jsTemplate}}' readonly/>
 				</div>
 			</div>
 
 			<div class='split-right'>
-				<div class='virtualdom centered'>
-					<h2>virtual DOM</h2>
-
-					<p>&#123;&#123;a}} depends on 'a'</p>
-					<p>&#123;&#123;b}} depends on 'b'</p>
-
-					{{#if step === 3}}
-						<p>&#123;&#123;a+b}} depends on '${a+b}'</p>
-					{{/if}}
-				</div>
+				<widget/>
 			</div>
 		</div>
-	{{/if}}
+	</div>
 </Slide>
 
 <style>
+	.container {
+		width: 100%;
+		height: 150vh;
+		transition: transform 0.6s ease-in-out;
+	}
 
+	code {
+		font-size: 1.4em;
+	}
+
+	.viewmodel, .virtualdom, .batch {
+		color: white;
+		padding: 1em;
+	}
+
+	.viewmodel, .virtualdom {
+		position: absolute;
+		top: 50%;
+		width: 60%;
+		transform: translate(0,-50%);
+	}
+
+	.viewmodel {
+		right: 10%;
+		background-color: rgb(150,0,0);
+	}
+
+	.virtualdom {
+		left: 10%;
+		background-color: rgb(0,150,0);
+	}
+
+	.batch {
+		background-color: rgb(0,0,150);
+		width: 70%;
+		margin: 0 15%;
+		position: absolute;
+		text-align: center;
+	}
 </style>
 
 <script>
+	const run = require( '../../shared/run' );
+	const jsTemplate = require( './jsTemplate' );
+
 	component.exports = {
 		data: {
 			step: 1,
 			template: '{{a}} + {{b}} = {{a+b}}',
 
 			a: 1,
-			b: 2
+			b: 2,
+
+			offsets: [
+				null,
+				0,
+				0,
+				0,
+				-50,
+				-120
+			],
+
+			jsTemplate
 		},
 
 		oninit () {
@@ -71,7 +155,27 @@ ractive = new Ractive({
 						let parsed = Ractive.parse( t );
 						this.set( 'parsed', parsed );
 					} catch ( err ) {}
+				},
+
+				step: s => {
+					let target = {
+						a: s > 3 ? 40 : 2,
+						b: s > 3 ? 2 : 1
+					};
+
+					this.animate( target, {
+						duration: 1200,
+						easing: 'ease-in-out'
+					});
 				}
+			});
+		},
+
+		onrender () {
+			let widget = this.findComponent( 'widget' );
+
+			run( jsTemplate, {
+				ractive: widget
 			});
 		},
 
@@ -79,6 +183,10 @@ ractive = new Ractive({
 			if ( !e.metaKey && e.which >= 37 && e.which <= 40 ) {
 				event.stopPropagation();
 			}
+		},
+
+		transitions: {
+			slide: require( 'ractive-transitions-slide' )
 		}
 	};
 </script>

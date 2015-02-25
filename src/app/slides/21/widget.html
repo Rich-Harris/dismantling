@@ -1,0 +1,63 @@
+<div class='padded'>
+	<p>this all happens <strong>synchronously</strong>, but...</p>
+
+	<div>
+		{{#if step === 0}}
+			<button intro-outro='slide:{duration:1000}' on-click='fire("start")'>start</button>
+		{{/if}}
+	</div>
+
+	<div>
+		{{#if step > 0}}
+			<div intro-outro='fade:fast'>
+				{{#if step > 0}}
+					<p intro='typewriter'>...changes in state may trigger asynchronous transitions.</p>
+				{{/if}}
+
+				{{#if step > 1}}
+					<div class='box' intro='fly:{duration:1000}'>
+						<p>Chaining transitions is easy with promises, and they needn't just be simple CSS transitions.</p>
+
+						{{#if step > 2}}
+							<button intro='slide:{duration:1000}' on-click='fire("reset")'>reset</button>
+						{{/if}}
+					</div>
+				{{/if}}
+			</div>
+		{{/if}}
+	</div>
+</div>
+
+<style>
+	.box {
+		background-color: #ddd;
+		padding: 1em;
+		border-radius: 0.5em;
+		border: 1px solid #333;
+	}
+
+	.box button {
+		margin: 0;
+	}
+
+	button {
+		display: block;
+		width: 100%;
+		padding: 1em 2em;
+	}
+</style>
+
+<script>
+	component.exports = {
+		data: {
+			step: 0
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' ),
+			fly: require( 'ractive-transitions-fly' ),
+			typewriter: require( 'ractive-transitions-typewriter' ),
+			slide: require( 'ractive-transitions-slide' )
+		}
+	};
+</script>

@@ -13,6 +13,7 @@ body {
 	font-family: 'Helvetica Neue';
 	font-weight: 200;
 	color: #333;
+	tab-size: 2;
 }
 
 body * {
@@ -31,4 +32,17 @@ p {
 
 .clearfix {
 	@include clearfix;
+}
+
+button {
+	background-color: rgb(0,50,150);
+	padding: 0.5em;
+	border-radius: 0.2em;
+	border: none;
+	color: white;
+	outline: none;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: inherit;
+	margin: 0 0 1em 0;
 }

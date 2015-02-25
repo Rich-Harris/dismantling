@@ -474,7 +474,7 @@ But that's not really the point of this presentation.
 
 One of the big promises of the digital revolution was the promise of disintermediation. We wanted to use the power of the network to connect people - buyers to sellers, borrowers to lenders, artists to fans, people on Craiglist with weird fetishes to other people on Craigslist with weird fetishes.
 
-And we did it! We got rid of all those intermediaries, in all sorts of arenas. We haven't exactly resurrected Athenian democracy, but we live in a world where politicians answer directly to the people, and activists can tell the world about what's happening in places like Ferguson.
+And we did it! We got rid of all those intermediaries, in all sorts of arenas.
 
 But there's one group of intermediaries that we haven't got rid of - ourselves. If you want to create interactive applications - as a journalist, or as an educator, or an academic, or a community leader, or an artist, or an activist - if you want to use web technologies to express ideas that can't be expressed by other means, or to connect with people who you couldn't otherwise connect with - you can't. Unless you go through us.
 
